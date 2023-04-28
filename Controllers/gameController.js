@@ -45,6 +45,23 @@ const gamble = async (req, res) => {
 
         if (winning.win === true) {
             const airtime = Africastalking.AIRTIME
+            const sms = Africastalking.SMS
+
+            // Use the service
+            const options = {
+                to: [phone],
+                message: `You Won the Lotto. Huray!s`
+            }
+
+// Send message and capture the response or error
+            sms.send(options)
+                .then( response => {
+                    console.log(response);
+                })
+                .catch( error => {
+                    console.log(error);
+                });
+
             await airtime.send({
                 recipients: [
                     {
@@ -61,6 +78,8 @@ const gamble = async (req, res) => {
                 .catch(error => {
                     console.log(error);
                 });
+
+
             return res.status(201).send({message: "You won"});
         } else {
             return res.status(409).send({message: "You lost"});
