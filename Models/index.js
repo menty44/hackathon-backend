@@ -20,6 +20,7 @@ db.sequelize = sequelize
 //connecting to model
 db.users = require('./userModel') (sequelize, DataTypes)
 db.code = require('./codeModel') (sequelize, DataTypes)
+db.game = require('./gameModel') (sequelize, DataTypes)
 
 //exporting the module
 module.exports = db
