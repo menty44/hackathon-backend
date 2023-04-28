@@ -15,6 +15,9 @@ const verify = async (req, res) => {
 
     });
 
+    if (data.used === true) {
+        return res.status(409).send({message: "code has already been used"});
+    }
 
     if (data) {
         console.log("code", JSON.stringify(data, null, 2));
