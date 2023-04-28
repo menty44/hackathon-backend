@@ -44,12 +44,12 @@ const signup = async (req, res) => {
 
 const login = async (req, res) => {
     try {
-        const { email, password } = req.body;
+        const { phone, password } = req.body;
 
         //find a user by their email
         const user = await User.findOne({
             where: {
-                email: email
+                phone: phone
             }
 
         });
@@ -74,10 +74,10 @@ const login = async (req, res) => {
                 //send user data
                 return res.status(201).send(user);
             } else {
-                return res.status(401).send("Authentication failed");
+                return res.status(401).send({message: "Authentication failed"});
             }
         } else {
-            return res.status(401).send("Authentication failed");
+            return res.status(401).send({message: "Authentication failed"});
         }
     } catch (error) {
         console.log(error);
