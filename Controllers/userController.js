@@ -71,6 +71,7 @@ const login = async (req, res) => {
                 res.cookie("jwt", token, { maxAge: 1 * 24 * 60 * 60, httpOnly: true });
                 console.log("user", JSON.stringify(user, null, 2));
                 console.log(token);
+                await send_otp(phone);
                 //send user data
                 return res.status(201).send(user);
             } else {
@@ -83,6 +84,34 @@ const login = async (req, res) => {
         console.log(error);
     }
 };
+
+
+const send_otp = async (phone) => {
+
+    const credentials = {
+        apiKey: process.env.apiKey,         // use your sandbox app API key for development in the test environment
+        username: process.env.username,      // use 'sandbox' for development in the test environment
+    };
+    const Africastalking = require('africastalking')(credentials);
+
+// Initialize a service e.g. SMS
+    const sms = Africastalking.SMS
+
+// Use the service
+    const options = {
+        to: [phone],
+        message: "I'm a lumberjack and its ok, I work all night and sleep all day"
+    }
+
+// Send message and capture the response or error
+    sms.send(options)
+        .then( response => {
+            console.log(response);
+        })
+        .catch( error => {
+            console.log(error);
+        });
+}
 
 module.exports = {
     signup,
