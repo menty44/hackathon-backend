@@ -12,51 +12,68 @@ const list = async (req, res) => {
 
 }
 
+const create_game = async (req, res) => {
+
+    const data = await Game.create(req.body);
+
+    if (data) {
+        return res.status(201).send(data);
+    } else {
+        return res.status(409).send("Error while creating game");
+    }
+
+}
+
 const gamble = async (req, res) => {
-//     const {phone} = req.body;
-//
-//     const credentials = {
-//         apiKey: process.env.apiKey,         // use your sandbox app API key for development in the test environment
-//         username: process.env.username,      // use 'sandbox' for development in the test environment
-//     };
-//     const Africastalking = require('africastalking')(credentials);
-//
-//     // Initialize a service e.g. SMS
-//     const sms = Africastalking.SMS
-//
-//     const code = Math.floor(1000 + Math.random() * 9000);
-//     console.log(code);
-//
-//
-//     //saving the user
-//     const data = await Code.create({
-//         phone,
-//         code,
-//         used: false
-//     });
-//
-//     if (data) {
-//         console.log("code", JSON.stringify(data, null, 2));
-//     }
-// // Use the service
-//     const options = {
-//         to: [phone],
-//         message: `Your Lotto OTP is: ${code}`
-//     }
-//
-// // Send message and capture the response or error
-//     sms.send(options)
-//         .then( response => {
-//             console.log(response);
-//         })
-//         .catch( error => {
-//             console.log(error);
-//         });
-//     return res.status(201).send({message: "code resent"});
+
+    try {
+        const {phone, code} = req.body;
+
+        const credentials = {
+            apiKey: process.env.apiKey,         // use your sandbox app API key for development in the test environment
+            username: process.env.username,      // use 'sandbox' for development in the test environment
+        };
+
+        const Africastalking = require('africastalking')(credentials);
+
+        //find a user by their email
+        const winning = await Game.findOne({
+            where: {
+                winningcode: code
+            }
+        });
+
+        if (winning.win === true) {
+            const airtime = Africastalking.AIRTIME
+            await airtime.send({
+                recipients: [
+                    {
+                        phoneNumber: phone,
+                        currencyCode: 'KES',
+                        amount: 20
+                    }
+                ],
+                maxNumRetry: 3, // Will retry the transaction every 60seconds for the next 3 hours.
+            })
+                .then(response => {
+                    console.log(response);
+                })
+                .catch(error => {
+                    console.log(error);
+                });
+            return res.status(201).send({message: "You won"});
+        } else {
+            return res.status(409).send({message: "You lost"});
+        }
+    } catch (error) {
+        console.log(error);
+    }
+
 
 }
 
 module.exports = {
     list,
-    gamble
+    gamble,
+    create_game
 };
