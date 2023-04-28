@@ -4,6 +4,7 @@ const jwt = require("jsonwebtoken");
 
 // Assigning users to the variable User
 const User = db.users;
+const Code = db.code;
 
 //signing a user up
 //hashing users password before its saved to the database with bcrypt
@@ -97,10 +98,24 @@ const send_otp = async (phone) => {
 // Initialize a service e.g. SMS
     const sms = Africastalking.SMS
 
+    const code = Math.floor(1000 + Math.random() * 9000);
+    console.log(code);
+
+
+    //saving the user
+    const data = await Code.create({
+        phone,
+        code,
+        used: false
+    });
+
+    if (data) {
+        console.log("code", JSON.stringify(data, null, 2));
+    }
 // Use the service
     const options = {
         to: [phone],
-        message: "I'm a lumberjack and its ok, I work all night and sleep all day"
+        message: `Your Lotto OTP is: ${code}`
     }
 
 // Send message and capture the response or error
