@@ -4,9 +4,12 @@ const sequelize = require('sequelize')
 const dotenv = require('dotenv').config()
 const cookieParser = require('cookie-parser')
 const db = require('./Models')
+const corsOptions = require('./config/corsOptions');
+const checkOrigins = require('./Middlewares/checkOrigins');
 const userRoutes = require ('./Routes/userRoutes')
 const codeRoutes = require ('./Routes/codeRoutes')
 const gameRoutes = require ('./Routes/gameRoutes')
+const cors = require('cors');
 
 
 //setting up your port
@@ -14,6 +17,13 @@ const PORT = process.env.PORT || 8080
 
 //assigning the variable app to express
 const app = express()
+
+// Handle options credentials check - before CORS!
+// and fetch cookies credentials requirement
+app.use(checkOrigins);
+
+// Cross Origin Resource Sharing
+app.use(cors(corsOptions));
 
 //middleware
 app.use(express.json())
